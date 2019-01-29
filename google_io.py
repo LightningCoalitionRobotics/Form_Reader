@@ -3,6 +3,7 @@ import json
 import gspread
 from oauth2client.client import SignedJwtAssertionCredentials
 from pylatex import Document, Section, Subsection, Command
+import pylatex as pyl
 
 json_key = json.load(open('creds.json'))
 scope = ['https://spreadsheets.google.com/feeds',
@@ -20,7 +21,7 @@ wanted = {}
 plan_for_next = {}
 not_accomplished = {}
 
-for i in range(2, 7):
+for i in range(2, 5):
     if sheet.acell('A{}'.format(i)).value != "Stop":
         v = i-1
 
@@ -53,14 +54,21 @@ for i in range(2, 7):
 Latex Section Begins:
 '''
 
-for i in range(2, 7):
+for i in range(2, 5):
     if __name__ == '__main__':
         v = i - 1
 
         doc = Document()
-        doc.preamble.append(Command('title', 'title eeeee')) # what should the tile be???
-        doc.preamble.append(Command('author', sheet.cell(i, 9))) # create dict with emails to authors
-        doc.preamble.append(Command('date', "date lol"))
+        doc.documentclass = Command('documentclass', options=['12pt', 'landscape'], arguments=['article'])
+        doc.packages.append(pyl.Package('graphicx'))
+        doc.packages.append(pyl.Package('fancyhdr'))
+        doc.packages.append(pyl.Package('float'))
+
+
+        doc.preamble.append(pyl.Command('pagestyle', 'fancy'))
+        doc.preamble.append(pyl.Command('title', 'title eeeee')) # what should the tile be???
+        doc.preamble.append(pyl.Command('author', sheet.cell(i, 9))) # create dict with emails to authors
+        doc.preamble.append(pyl.Command('date', "date lol"))
         # doc.append(NoEscape(r'\maketitle'))
 
         with doc.create(Section('Our Plan')):
@@ -71,8 +79,8 @@ for i in range(2, 7):
             doc.append(not_accomplished[v])
         with doc.create(Section('Next Practice')):
             doc.append(plan_for_next[v])
-        doc.generate_pdf("test", clean_tex=False) # based On October 13, 2019 or whatever
-        tex = doc.dumps()
+        doc.generate_pdf("notebook{}".format(v), clean_tex=False) # based On October 13, 2019 or whatever
+        # tex = doc.dumps()
 
 #     #cd C:\Users\chris\Desktop\Coding\Python\Form Reader
 #
