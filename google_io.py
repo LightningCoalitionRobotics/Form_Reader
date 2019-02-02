@@ -11,44 +11,37 @@ scope = ['https://spreadsheets.google.com/feeds',
 
 credentials = SignedJwtAssertionCredentials(json_key['client_email'], json_key['private_key'].encode(), scope)
 file = gspread.authorize(credentials)
-sheet = file.open("Form Reader Thing").sheet1
+sheet = file.open("Notebook Form Responses").sheet1
 
-# down, right
 date = {}
-team_growth = {}
-accomplished = {}
-wanted = {}
-plan_for_next = {}
-not_accomplished = {}
+author = {}
+accomplished_bul = {}
+accomplished_par = {}
+wanted_bul = {}
+wanted_par = {}
+next_par = {}
+next_bul = {}
+didnt_do_bul = {}
+improve_par = {}
 
 for i in range(2, 5):
     if sheet.acell('A{}'.format(i)).value != "Stop":
         v = i-1
+        date[v] = sheet.cell(i, 3)
+        author[v] = sheet.cell(i, 4)
+        wanted_bul[v] = sheet.cell(i, 5)
+        wanted_par[v] = sheet.cell(i, 6)
+        accomplished_bul[v] = sheet.cell(i, 7)
+        accomplished_par[v] = sheet.cell(i, 8)
+        didnt_do_bul[v] = sheet.cell(i, 9)
+        improve_par[v] = sheet.cell(i, 10)
+        next_bul[v] = sheet.cell(i, 11)
+        next_par[v] = sheet.cell(i , 12)
 
-        date[v] = sheet.cell(i, 3).value
-
-        if len(sheet.cell(i, 4).value) > 0:
-            is_team_growth = True
-            team_growth[v] = sheet.cell(i,4).value
-
-        elif len(sheet.cell(i, 4).value) == 0:
-            is_team_growth = False
-
-        accomplished[v] = sheet.cell(i, 5).value.split(',')
-        not_accomplished[v] = sheet.cell(i, 6).value.split(',')
-        wanted[v] = sheet.cell(i, 7).value.split(',')
-        plan_for_next[v] = sheet.cell(i, 8).value.split(',')
-
-        # if "https" in sheet.cell(i, 9).value:
-        #     images = True
-        #     image_links = sheet.cell(i,9).value.split(',')
-        # else:
-        #     images = False
         print("Finished parsing row {}".format(v))
 
     elif sheet.acell('A{}'.format(i)).value == "Stop":
-        print("Finished parsing, data:")
-        print(wanted)
+        print("Finished parsing")
 
 '''
 Latex Section Begins:
@@ -59,29 +52,44 @@ for i in range(2, 5):
         v = i - 1
 
         doc = Document()
-        doc.documentclass = Command('documentclass', options=['12pt', 'landscape'], arguments=['article'])
+        doc.documentclass = Command('documentclass', options=['12pt'], arguments=['article'])
         doc.packages.append(pyl.Package('graphicx'))
         doc.packages.append(pyl.Package('fancyhdr'))
         doc.packages.append(pyl.Package('float'))
 
-
         doc.preamble.append(pyl.Command('pagestyle', 'fancy'))
-        doc.preamble.append(pyl.Command('title', 'title eeeee')) # what should the tile be???
-        doc.preamble.append(pyl.Command('author', sheet.cell(i, 9))) # create dict with emails to authors
-        doc.preamble.append(pyl.Command('date', "date lol"))
-        # doc.append(NoEscape(r'\maketitle'))
+        doc.preamble.append(pyl.Command('title', 'Notebook'))
+        doc.append(date[v] + " - " + author[v]) #or preamble.append?
 
         with doc.create(Section('Our Plan')):
-            doc.append(wanted[v]) # format this all
+            # remove [] from all strings
+            with doc.create(Itemize()) as itemize:
+                for v in wanted_bul:
+                    itemize.add_item(wanted_bul[v])
+                itemize.append(Command("ldots"))
+            doc.append(wanted_par[v])
         with doc.create(Section('What We Got Done')):
-            doc.append(accomplished[v])
-        with doc.create(Section('What We Did Not Get Done')):
-            doc.append(not_accomplished[v])
+            with doc.create(Itemize()) as itemize:
+                for v in accomplished_bul:
+                    itemize.add_item(accomplished_bul[v])
+                itemize.append(Command("ldots"))
+            doc.append(accomplished_par[v])
+        with doc.create(Section('What We Can Improve On For Next Time')):
+            with doc.create(Itemize()) as itemize:
+                for v in improve_bul:
+                    itemize.add_item(improve_bul[v])
+                itemize.append(Command("ldots"))
+            doc.append(improve_par[v])
         with doc.create(Section('Next Practice')):
-            doc.append(plan_for_next[v])
-        doc.generate_pdf("notebook{}".format(v), clean_tex=False) # based On October 13, 2019 or whatever
-        # tex = doc.dumps()
+            with doc.create(Itemize()) as itemize:
+                for v in next_bul:
+                    itemize.add_item(next_bul[v])
+                itemize.append(Command("ldots"))
+            doc.append(next_par[v])
+        doc.generate_pdf("notebook{}".format(v), clean_tex=False)
+
+
 
 #     #cd C:\Users\chris\Desktop\Coding\Python\Form Reader
 #
-#     # redo form with author and also with the correct seperators (,)
+#     # redo form with author
