@@ -50,7 +50,6 @@ Latex Section Begins:
 for i in range(2, 3):
     if __name__ == '__main__':
         v = i - 1
-
         doc = Document()
         doc.documentclass = Command('documentclass', options=['12pt'], arguments=['article'])
         doc.packages.append(pyl.Package('graphicx'))
@@ -62,33 +61,28 @@ for i in range(2, 3):
         doc.append(date[v] + " - " + author[v])
 
         with doc.create(Section('Our Plan')):
-            # remove [] from all strings
             with doc.create(Itemize()) as itemize:
-                for v in wanted_bul:
-                    for item in wanted_bul[v]:
+                for x in wanted_bul:
+                    for item in wanted_bul[x]:
                         itemize.add_item(item)
-                itemize.append(Command("ldots"))
             doc.append(wanted_par[v])
         with doc.create(Section('What We Got Done')):
             with doc.create(Itemize()) as itemize:
-                for v in accomplished_bul:
-                    for item in wanted_bul[v]:
+                for x in accomplished_bul:
+                    for item in accomplished_bul[v]:
                         itemize.add_item(item)
-                itemize.append(Command("ldots"))
             doc.append(accomplished_par[v])
         with doc.create(Section('What We Can Improve On For Next Time')):
             doc.append(improve_par[v])
             with doc.create(Itemize()) as itemize:
-                for v in didnt_do_bul:
-                    for item in wanted_bul[v]:
+                for x in didnt_do_bul:
+                    for item in didnt_do_bul[v]:
                         itemize.add_item(item)
-                itemize.append(Command("ldots"))
         with doc.create(Section('Next Practice')):
             with doc.create(Itemize()) as itemize:
-                for v in next_bul:
-                    for item in wanted_bul[v]:
+                for x in next_bul:
+                    for item in next_bul[v]:
                         itemize.add_item(item)
-                itemize.append(Command("ldots"))
             doc.append(next_par[v])
         doc.generate_pdf("notebook{}".format(v), clean_tex=False)
 
