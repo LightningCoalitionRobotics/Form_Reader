@@ -39,6 +39,7 @@ for i in range(2, 5):
         next_par[v] = sheet.cell(i , 12).value
 
         print("Finished parsing row {}".format(v))
+        print(wanted_bul)
 
     elif sheet.acell('A{}'.format(i)).value == "Stop":
         print("Finished parsing")
@@ -47,7 +48,7 @@ for i in range(2, 5):
 Latex Section Begins:
 '''
 
-for i in range(2, 3):
+for i in range(2, 5):
     if __name__ == '__main__':
         v = i - 1
         doc = Document()
@@ -62,27 +63,23 @@ for i in range(2, 3):
 
         with doc.create(Section('Our Plan')):
             with doc.create(Itemize()) as itemize:
-                for x in wanted_bul:
-                    for item in wanted_bul[x]:
-                        itemize.add_item(item)
+                for item in wanted_bul[v]:
+                    itemize.add_item(item)
             doc.append(wanted_par[v])
         with doc.create(Section('What We Got Done')):
             with doc.create(Itemize()) as itemize:
-                for x in accomplished_bul:
-                    for item in accomplished_bul[v]:
-                        itemize.add_item(item)
+                for item in accomplished_bul[v]:
+                    itemize.add_item(item)
             doc.append(accomplished_par[v])
         with doc.create(Section('What We Can Improve On For Next Time')):
-            doc.append(improve_par[v])
             with doc.create(Itemize()) as itemize:
-                for x in didnt_do_bul:
-                    for item in didnt_do_bul[v]:
-                        itemize.add_item(item)
+                for item in didnt_do_bul[v]:
+                    itemize.add_item(item)
+            doc.append(improve_par[v])
         with doc.create(Section('Next Practice')):
             with doc.create(Itemize()) as itemize:
-                for x in next_bul:
-                    for item in next_bul[v]:
-                        itemize.add_item(item)
+                for item in next_bul[v]:
+                    itemize.add_item(item)
             doc.append(next_par[v])
         doc.generate_pdf("notebook{}".format(v), clean_tex=False)
 
